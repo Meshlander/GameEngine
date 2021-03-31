@@ -1,0 +1,91 @@
+/*-----------------------------------------------------------------------------------------------------------*/
+Game TODOS
+/*-----------------------------------------------------------------------------------------------------------*/
+Make a sophisticated and failure proof solution for your memory handling, like allocation.
+Try to get whatever you need from the default .h files, and stop including them, to reduce app size.
+/*-----------------------------------------------------------------------------------------------------------*/
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!023 PLAYER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+HMH 019 vége a hangért
+HMH 025-028 polish
+HMH previous for sound, and syncing(???)
+HMH 025 13:30 Multi-threaded preparation
+/*-----------------------------------------------------------------------------------------------------------*/
+Character creation with vectors + (file saving/loading)
+Character animation//
+Game map//
+/*-----------------------------------------------------------------------------------------------------------*/
+Come up with a story, and a name for the game.
+Cats fly and cut down each other and throw bouncign balls...
+/*************************************************************************************************************/
+
+Checklist for network implementation; things you have to create that you used unity's functionality for.
+
+1: [SYNCVAR] -> variables sent to every client by server.
+2: bool32 IsLocalPlayer -> whether the client is me.
+3: bool32 IsServer -> now the server will be a separate entinty.
+4: [COMMAND] -> localclient modify's its own values on the server.
+
+HMH 046 for multiplayer
+TCP/IP multiplayer(!!!)
+PORTING(!!!)
+
+HALFTRANSITIONCOUNT MISTERY
+
+
+
+POSITION VELOCITY TRANSFORMATION INTEGRALS.....................................
+
+
+BOOL DrawBitmap (HDC hDC, INT x, INT y, HBITMAP hBitmap, DWORD dwROP)
+{
+    HDC       hDCBits;
+    BITMAP    Bitmap;
+    BOOL      bResult;
+
+    if (!hDC || !hBitmap)
+        return FALSE;
+
+    hDCBits = CreateCompatibleDC(hDC);
+    GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&Bitmap);
+    SelectObject(hDCBits, hBitmap);
+    bResult = BitBlt(hDC, x, y, Bitmap.bmWidth, Bitmap.bmHeight, hDCBits, 0, 0, dwROP);
+    DeleteDC(hDCBits);
+
+    return bResult;
+}
+
+Player->parentedLocalLeftPelvis = V3Ops.v3Sub(Player->parentedLocalLeftPelvis, Player->localCharacterOriginPoint);
+	Player->parentedLocalLeftPelvis = QJointRot(Player->parentedLocalLeftPelvis, Player->leftPelvisRotAmount, Player->AxisLPelvis);
+	Player->parentedLocalLeftPelvis = V3Ops.v3Add(Player->localCharacterOriginPoint, Player->parentedLocalLeftPelvis);
+	//Children/////////////////////////////////////////////////////////////////////////////////////////////////
+	//
+	Player->AxisLKnee = QJointRot(Player->AxisLKnee, Player->leftPelvisRotAmount, Player->AxisLPelvis);
+	Player->parentedLocalLeftKnee = V3Ops.v3Sub(Player->parentedLocalLeftKnee, Player->localCharacterOriginPoint);
+	Player->parentedLocalLeftKnee = QJointRot(Player->parentedLocalLeftKnee, Player->leftPelvisRotAmount, Player->AxisLPelvis);
+	Player->parentedLocalLeftKnee = V3Ops.v3Add(Player->localCharacterOriginPoint, Player->parentedLocalLeftKnee);
+	//
+	Player->AxisLFoot = QJointRot(Player->AxisLFoot, Player->leftPelvisRotAmount, Player->AxisLPelvis);
+	Player->parentedLocalLeftFoot = V3Ops.v3Sub(Player->parentedLocalLeftFoot, Player->localCharacterOriginPoint);
+	Player->parentedLocalLeftFoot = QJointRot(Player->parentedLocalLeftFoot, Player->leftPelvisRotAmount, Player->AxisLPelvis);
+	Player->parentedLocalLeftFoot = V3Ops.v3Add(Player->localCharacterOriginPoint, Player->parentedLocalLeftFoot);
+	//
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!LKNEE
+	//
+	/**************************************************************************************************Left knee*/
+	Player->parentedLocalLeftKnee = V3Ops.v3Sub(Player->parentedLocalLeftKnee, Player->parentedLocalLeftPelvis);
+	Player->parentedLocalLeftKnee = QJointRot(Player->parentedLocalLeftKnee, Player->leftKneeRotAmount, Player->AxisLKnee);
+	Player->parentedLocalLeftKnee = V3Ops.v3Add(Player->parentedLocalLeftPelvis, Player->parentedLocalLeftKnee);
+	//Children////////////////////////////////////////////////////////////////////////////
+	//
+	Player->AxisLFoot = QJointRot(Player->AxisLFoot, Player->leftKneeRotAmount, Player->AxisLKnee);
+	Player->parentedLocalLeftFoot = V3Ops.v3Sub(Player->parentedLocalLeftFoot, Player->parentedLocalLeftPelvis);
+	Player->parentedLocalLeftFoot = QJointRot(Player->parentedLocalLeftFoot, Player->leftKneeRotAmount, Player->AxisLKnee);
+	Player->parentedLocalLeftFoot = V3Ops.v3Add(Player->parentedLocalLeftPelvis, Player->parentedLocalLeftFoot);
+	//
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!LFOOT
+	//
+	/**************************************************************************************************Left foot*/
+	Player->parentedLocalLeftFoot = V3Ops.v3Sub(Player->parentedLocalLeftFoot, Player->parentedLocalLeftKnee);
+	Player->parentedLocalLeftFoot = QJointRot(Player->parentedLocalLeftFoot, Player->leftFootRotAmount, Player->AxisLFoot);
+	Player->parentedLocalLeftFoot = V3Ops.v3Add(Player->parentedLocalLeftKnee, Player->parentedLocalLeftFoot);
+	//????????????????????????????????????????

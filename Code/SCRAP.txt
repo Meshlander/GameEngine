@@ -1,0 +1,67 @@
+void ParentedJointMovement(player_instance *Player)
+{
+	v3Ops V3Ops = {};
+	point_rotation PRot = {};
+	LocalOriginMovement(Player, 1);
+	/********************************************************************************Left leg movement.*******************/
+	// Reparenting happens all the way down the chain during every rotation.
+	v3 childDiffOut = childDiff(Player->parentedLocalLeftPelvis, Player->parentedLocalLeftKnee);
+	v3 childDiffOut2 = childDiff(Player->parentedLocalLeftKnee, Player->parentedLocalLeftFoot);
+	//2above
+	Player->parentedLocalLeftPelvis = JointRotation(Player->parentedLocalLeftPelvis, Player->localCharacterOriginPoint, Player->leftPelvisRotAmount, false);
+	//2below
+	Player->parentedLocalLeftKnee = childParenting(Player->parentedLocalLeftKnee, Player->parentedLocalLeftPelvis, childDiffOut);
+	Player->parentedLocalLeftFoot = childParenting(Player->parentedLocalLeftFoot, Player->parentedLocalLeftKnee, childDiffOut2);
+	/*****************************/
+	childDiffOut = childDiff(Player->parentedLocalLeftKnee, Player->parentedLocalLeftFoot);
+	//1above
+	Player->parentedLocalLeftKnee = JointRotation(Player->parentedLocalLeftKnee, Player->parentedLocalLeftPelvis, Player->leftKneeRotAmount, false);
+	//1below
+	Player->parentedLocalLeftFoot = childParenting(Player->parentedLocalLeftFoot, Player->parentedLocalLeftKnee, childDiffOut);
+	//
+	Player->parentedLocalLeftFoot = JointRotation(Player->parentedLocalLeftFoot, Player->parentedLocalLeftKnee, Player->leftFootRotAmount, false);
+	/*******************************************************************************Right leg movement*************************************************/
+	// Reparenting happens all the way down the chain during every rotation.
+	childDiffOut = childDiff(Player->parentedLocalRightPelvis, Player->parentedLocalRightKnee);
+	childDiffOut2 = childDiff(Player->parentedLocalRightKnee, Player->parentedLocalRightFoot);
+	//ahhoz h a forgatás emelje az egészet
+	real32 rightFootYBeforeParenting = Player->parentedLocalRightFoot.y;
+	//
+	//2above
+	Player->parentedLocalRightPelvis = JointRotation(Player->parentedLocalRightPelvis, Player->localCharacterOriginPoint, Player->rightPelvisRotAmount, false);
+	//2below
+	Player->parentedLocalRightKnee = childParenting(Player->parentedLocalRightKnee, Player->parentedLocalRightPelvis, childDiffOut);
+	Player->parentedLocalRightFoot = childParenting(Player->parentedLocalRightFoot, Player->parentedLocalRightKnee, childDiffOut2);
+	/*****************************/
+	childDiffOut = childDiff(Player->parentedLocalRightKnee, Player->parentedLocalRightFoot);
+	//1above
+	Player->parentedLocalRightKnee = JointRotation(Player->parentedLocalRightKnee, Player->parentedLocalRightPelvis, Player->rightKneeRotAmount, false);
+	//1below
+	Player->parentedLocalRightFoot = childParenting(Player->parentedLocalRightFoot, Player->parentedLocalRightKnee, childDiffOut);
+	//
+	Player->parentedLocalRightFoot = JointRotation(Player->parentedLocalRightFoot, Player->parentedLocalRightKnee, Player->rightFootRotAmount, false);
+	/********************************************************************Colliding elevating origin.****************************************************/
+	if (Player->isRightFootColliding)
+	{
+		real32 y = (rightFootYBeforeParenting - Player->parentedLocalRightFoot.y);
+		Player->originDirection = V3Ops.v3Add(Player->originDirection, v3{ 0, y, 0 });
+		LocalOriginMovement(Player, 1);
+	}
+	/****************************************************************************Left arm movement.**********************************/
+	childDiffOut = childDiff(Player->parentedLocalLeftShoulder, Player->parentedLocalLeftElbow);
+	childDiffOut2 = childDiff(Player->parentedLocalLeftElbow, Player->parentedLocalLeftHand);
+	//2above
+	Player->parentedLocalLeftShoulder = JointRotation(Player->parentedLocalLeftShoulder, Player->localCharacterOriginPoint, Player->leftShoulderRotAmount, false);
+	//2below
+	Player->parentedLocalLeftElbow = childParenting(Player->parentedLocalLeftElbow, Player->parentedLocalLeftShoulder, childDiffOut);
+	Player->parentedLocalLeftHand = childParenting(Player->parentedLocalLeftHand, Player->parentedLocalLeftElbow, childDiffOut2);
+	/*****************************/
+	childDiffOut = childDiff(Player->parentedLocalLeftElbow, Player->parentedLocalLeftHand);
+	//1above
+	Player->parentedLocalLeftElbow = JointRotation(Player->parentedLocalLeftElbow, Player->parentedLocalLeftShoulder, Player->leftElbowRotAmount, false);
+	//1below
+	Player->parentedLocalLeftHand = childParenting(Player->parentedLocalLeftHand, Player->parentedLocalLeftElbow, childDiffOut);
+	//
+	Player->parentedLocalLeftHand = JointRotation(Player->parentedLocalLeftHand, Player->parentedLocalLeftElbow, Player->leftHandRotAmount, false);
+	/****************************************************************************Right arm movement.********************************/
+}
